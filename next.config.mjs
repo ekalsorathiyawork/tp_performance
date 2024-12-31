@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,  // Helps catch issues during development
+  webpack: (config) => {
+    config.optimization.splitChunks = {
+      chunks: 'all',
+    };
+    return config;
+  },
     images: {
       remotePatterns: [
         {

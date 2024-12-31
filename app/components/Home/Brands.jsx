@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import DOMPurify from "dompurify";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 const Brands = () => {
@@ -10,6 +10,94 @@ const Brands = () => {
   const [brands, setBrands] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const language = "eu";
+    const swiperInstances = useRef({}); // Using useRef to avoid unnecessary re-renders
+  
+
+  const addSwiperClasses = (swiperElement) => {
+    swiperElement.classList.add("swiper");
+    swiperElement
+      .querySelector(".swiper-wrapper_init")
+      ?.classList.add("swiper-wrapper");
+    swiperElement
+      .querySelectorAll(".swiper-slide_init")
+      ?.forEach((slide) => slide.classList.add("swiper-slide"));
+  };
+
+  const removeSwiperClasses = (swiperElement) => {
+    swiperElement.classList.remove("swiper");
+    swiperElement
+      .querySelector(".swiper-wrapper_init")
+      ?.classList.remove("swiper-wrapper");
+    swiperElement
+      .querySelectorAll(".swiper-slide_init")
+      ?.forEach((slide) => slide.classList.remove("swiper-slide"));
+  };
+
+  const initSwipers = () => {
+    const swipers = document.querySelectorAll(".swiper_init");
+    const isVisible = window.innerWidth <= 768;
+    const width = document.documentElement.clientWidth;
+
+    swipers.forEach((el, index) => {
+      // Check if the element is visible or should be initialized
+      if (
+        isVisible ||
+        el.classList.contains("brandbar") ||
+        el.classList.contains("populargroups") ||
+        el.classList.contains("trailer_swiper")
+      ) {
+        if (!swiperInstances.current[index]) { // Check if swiper instance doesn't already exist
+          addSwiperClasses(el);
+
+          let swiperOptions = {
+            slidesPerView: "auto",
+            spaceBetween: 15,
+            draggable: true,
+          };
+
+          // Customize swiperOptions based on class or conditions
+          if (el.classList.contains("swiper-products")) {
+            swiperOptions.slidesPerView = 2;
+            swiperOptions.spaceBetween = 5;
+          } else if (el.classList.contains("trailer_swiper") && width > 1200) {
+            swiperOptions.slidesPerView = 2.5;
+            swiperOptions.spaceBetween = 15;
+          } else if (el.classList.contains("brandbar")) {
+            swiperOptions.autoplay = { delay: 3000 };
+            swiperOptions.loop = true;
+            swiperOptions.breakpoints = {
+              300: { slidesPerView: 5, spaceBetween: 60 },
+              678: { slidesPerView: 10, spaceBetween: 60 },
+            };
+          } else if (el.classList.contains("populargroups")) {
+            swiperOptions.navigation = {
+              nextEl: ".swiper-button-next",
+              prevEl: ".swiper-button-prev",
+            };
+          }
+
+          if (window.Swiper) {
+            swiperInstances.current[index] = new window.Swiper(el, swiperOptions);
+          } else {
+            console.error("Swiper is not available on window.");
+          }
+
+          el.querySelector(".fa-spinner")?.remove();
+          el.querySelector(".swiper-wrapper_init")?.classList.remove(
+            "swiper_onload"
+          );
+        }
+      } else {
+        Object.keys(swiperInstances.current).forEach((key) => {
+          if (swiperInstances.current[key]) {
+            removeSwiperClasses(el);
+            swiperInstances.current[key].destroy(true, true);
+            swiperInstances.current[key] = undefined;
+          }
+        });
+      }
+    });
+  };
 
   useEffect(() => {
     const fetchFooter = async () => {
@@ -20,6 +108,10 @@ const Brands = () => {
         const brandsData = Object.values(
           response?.data?.data?.buildmenu?.brands || []
         );
+        const script = document.createElement("script");
+        script.src = "/js/swiper-bundle.min.js";
+        script.onload = () => initSwipers();
+        document.body.appendChild(script);
 
         setBrands(brandsData);
         setIsLoading(false);
@@ -30,6 +122,10 @@ const Brands = () => {
     };
 
     fetchFooter();
+    window.addEventListener("resize", initSwipers);
+    return () => {
+      window.removeEventListener("resize", initSwipers);
+    };
   }, []);
 
   const content =

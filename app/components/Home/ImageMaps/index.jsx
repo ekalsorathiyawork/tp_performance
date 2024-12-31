@@ -2,7 +2,6 @@
 import React from "react";
 import DOMPurify from "dompurify";
 // import { useGlobalContext } from "@/app/context/GlobalContext";
-import PaymentLogos from "../snippets/home/PaymentLogos";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -14,113 +13,6 @@ const ImageMaps = () => {
   const [app, setApp] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const language = "eu";
-  const [swiperInstances, setSwiperInstances] = useState({});
-
-  const addSwiperClasses = (swiperElement) => {
-    swiperElement.classList.add("swiper");
-    swiperElement
-      .querySelector(".swiper-wrapper_init")
-      ?.classList.add("swiper-wrapper");
-    swiperElement
-      .querySelectorAll(".swiper-slide_init")
-      ?.forEach((slide) => slide.classList.add("swiper-slide"));
-  };
-
-  const removeSwiperClasses = (swiperElement) => {
-    swiperElement.classList.remove("swiper");
-    swiperElement
-      .querySelector(".swiper-wrapper_init")
-      ?.classList.remove("swiper-wrapper");
-    swiperElement
-      .querySelectorAll(".swiper-slide_init")
-      ?.forEach((slide) => slide.classList.remove("swiper-slide"));
-  };
-
-  const initSwipers = () => {
-    const swipers = document.querySelectorAll(".swiper_init");
-    const isVisible = window.innerWidth <= 768;
-    const width = document.documentElement.clientWidth;
-
-    swipers.forEach((el, index) => {
-      if (
-        isVisible ||
-        el.classList.contains("brandbar") ||
-        el.classList.contains("populargroups") ||
-        el.classList.contains("trailer_swiper")
-      ) {
-        if (!swiperInstances[index]) {
-          addSwiperClasses(el);
-
-          let swiperOptions = {
-            slidesPerView: "auto",
-            spaceBetween: 15,
-            draggable: true,
-            // scrollbar: {
-            //   el: ".swiper-scrollbar",
-            //   draggable: true,
-            // },
-          };
-
-          if (el.classList.contains("swiper-products")) {
-            swiperOptions.slidesPerView = 2;
-            swiperOptions.spaceBetween = 5;
-          } else if (el.classList.contains("trailer_swiper") && width > 1200) {
-            swiperOptions.slidesPerView = 2.5;
-            swiperOptions.spaceBetween = 15;
-          } else if (el.classList.contains("brandbar")) {
-            swiperOptions.autoplay = { delay: 3000 };
-            swiperOptions.loop = true;
-            swiperOptions.breakpoints = {
-              300: { slidesPerView: 5, spaceBetween: 60 },
-              678: { slidesPerView: 10, spaceBetween: 60 },
-            };
-          } else if (el.classList.contains("populargroups")) {
-            swiperOptions.navigation = {
-              nextEl: ".swiper-button-next",
-              prevEl: ".swiper-button-prev",
-            };
-          }
-
-          if (window.Swiper) {
-            swiperInstances[index] = new window.Swiper(el, swiperOptions);
-          } else {
-            console.error("Swiper is not available on window.");
-          }
-
-          el.querySelector(".fa-spinner")?.remove();
-          el.querySelector(".swiper-wrapper_init")?.classList.remove(
-            "swiper_onload"
-          );
-
-          setSwiperInstances({ ...swiperInstances });
-        }
-      } else {
-        Object.keys(swiperInstances).forEach((key) => {
-          if (swiperInstances[key] !== undefined) {
-            removeSwiperClasses(el);
-            swiperInstances[key].destroy(true, true);
-            swiperInstances[key] = undefined;
-            setSwiperInstances({ ...swiperInstances });
-          }
-        });
-      }
-    });
-  };
-
-  useEffect(() => {
-    const loadSwiper = () => {
-      const script = document.createElement("script");
-      script.src = "/js/swiper-bundle.min.js";
-      script.onload = () => initSwipers();
-      document.body.appendChild(script);
-    };
-
-    loadSwiper();
-    window.addEventListener("resize", initSwipers);
-    return () => {
-      window.removeEventListener("resize", initSwipers);
-    };
-  }, [swiperInstances]);
 
   useEffect(() => {
     const fetchFooter = async () => {
@@ -190,7 +82,62 @@ const ImageMaps = () => {
                           marginTop: "15px",
                         }}
                       >
-                        <PaymentLogos />
+                        <Link href="/">
+                          <Image
+                            className="tp-paymentlogos"
+                            src={"/images/tp-pay-logo/bancontact.svg"}
+                            width={40}
+                            height={40}
+                            alt="Bancontact"
+                          />
+
+                          <Image
+                            className="tp-paymentlogos"
+                            src={"/images/tp-pay-logo/klarna.webp"}
+                            width={40}
+                            height={40}
+                            alt="Klarna"
+                          />
+
+                          <Image
+                            className="tp-paymentlogos"
+                            src={"/images/tp-pay-logo/mastercard.webp"}
+                            width={40}
+                            height={40}
+                            alt="Mastercard"
+                          />
+
+                          <Image
+                            className="tp-paymentlogos"
+                            src={"/images/tp-pay-logo/visa.webp"}
+                            width={40}
+                            height={40}
+                            alt="Visa"
+                          />
+
+                          <Image
+                            className="tp-paymentlogos"
+                            src={"/images/tp-pay-logo/maestro-card.webp"}
+                            width={40}
+                            height={40}
+                            alt="Maestro"
+                          />
+                          <Image
+                            className="tp-paymentlogos"
+                            src={"/images/tp-pay-logo/iDEAL_in3.png"}
+                            width={40}
+                            height={40}
+                            alt="iDeal"
+                          />
+
+                          <Image
+                            className="tp-paymentlogos"
+                            src={"/images/tp-pay-logo/paypal.webp"}
+                            width={40}
+                            height={40}
+                            alt="PayPal"
+                          />
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -487,177 +434,6 @@ const ImageMaps = () => {
           </div>
         </section>
       </div>
-      <style jsx global>
-        {`
-          .swiper-main.populargroups .swiper-slide {
-            max-width: 320px;
-          }
-
-          .populargroups .swiper-button-next {
-            color: #000;
-            top: calc((100% - 44px) / 2) !important;
-            background-color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 100%;
-            box-shadow: 0px 0px 5px 1px #bbb;
-            transition: 0.2s;
-            opacity: 0.5;
-            display: flex;
-            justify-content: center;
-          }
-
-          .populargroups .swiper-button-prev {
-            color: #000;
-            top: calc((100% - 44px) / 2) !important;
-            background-color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 100%;
-            box-shadow: 0px 0px 5px 1px #bbb;
-            transition: 0.2s ease;
-            opacity: 0.5;
-            display: flex;
-            justify-content: center;
-          }
-
-          .populargroups .swiper-button-next:hover,
-          .populargroups .swiper-button-prev:hover {
-            opacity: 1;
-          }
-
-          .populargroups .swiper-button-prev:after,
-          .populargroups .swiper-button-next:after {
-            font-size: 20px;
-            font-weight: 600;
-          }
-
-          .populargroups .swiper-button-prev:after {
-            padding-right: 3px;
-          }
-
-          .populargroups .swiper-button-next:after {
-            padding-left: 3px;
-          }
-
-          .swiper-button-disabled {
-            opacity: 0.25 !important;
-          }
-
-          @media (max-width: 767px) {
-            .fa-spinner {
-              display: block !important;
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              font-size: 50px;
-              z-index: 1;
-              color: #0282c5;
-            }
-
-            .swiper-main.populargroups .swiper-slide {
-              max-width: 192px;
-            }
-
-            .swiper_onload {
-              opacity: 0;
-              max-height: 472px;
-              overflow: hidden;
-            }
-
-            section.image-maps div.boat-trailer,
-            section.image-maps div.trailer {
-              width: 100%;
-            }
-
-            section.image-maps div.trailers {
-              border: none !important;
-            }
-
-            .brands img.grayscale {
-              -webkit-filter: grayscale(0%);
-            }
-
-            #popularproducts .productbrand {
-              background-color: none;
-            }
-
-            #popularproducts {
-              min-height: 600px;
-            }
-
-            section.image-maps div.trailers {
-              border: 1px solid #a9b3b8;
-            }
-
-            .swiper {
-              padding-bottom: 20px;
-            }
-
-            .swiper-main {
-              margin-left: -15px;
-              margin-right: -15px;
-              padding-bottom: 9px;
-            }
-
-            .swiper-main .swiper-scrollbar {
-              left: 0px;
-              right: 0px;
-              bottom: 0px;
-              height: 6px;
-              width: 100%;
-            }
-
-            .swiper-wrapper {
-              padding-left: 15px;
-              padding-right: 15px;
-            }
-
-            .swiper .usp-scrollbar {
-              bottom: var(--swiper-scrollbar-bottom, 0px) !important;
-            }
-
-            #brands-slider .swiper-slide img {
-              display: block;
-              width: 70px;
-              height: 70px;
-              object-fit: contain;
-              opacity: 1;
-            }
-
-            .swiper-slide {
-              width: 80%;
-            }
-
-            .pdl {
-              padding-left: 0px !important;
-            }
-
-            section.popularproducts h2 {
-              padding-bottom: 0px !important;
-            }
-
-            section.popularproducts .articlenumber {
-              display: none;
-            }
-
-            section.image-maps div.trailers {
-              border: none;
-            }
-
-            .productslider100,
-            .productslider100 img {
-              min-width: 100% !important;
-              width: 100% !important;
-            }
-
-            section.popularproducts .order button img {
-              display: none !important;
-            }
-          }
-        `}
-      </style>
     </>
   );
 };
